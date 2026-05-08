@@ -6,28 +6,42 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('kelas_user', function (Blueprint $table) {
             $table->id();
 
-            // 🔥 RELASI KE KELAS
-            $table->foreignId('kelas_id')
-                  ->constrained('kelas')
-                  ->onDelete('cascade');
+            // relasi ke tabel kelas
+            $table->unsignedBigInteger('kelas_id');
 
-            // 🔥 RELASI KE USER
-            $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->onDelete('cascade');
+            // relasi ke tabel users
+            $table->unsignedBigInteger('user_id');
 
             $table->timestamps();
 
-            // 🔥 BIAR GA DOUBLE JOIN
+            // biar user ga join kelas yang sama berkali-kali
             $table->unique(['kelas_id', 'user_id']);
+
+            // foreign key kelas
+            $table->foreign('kelas_id')
+                  ->references('id')
+                  ->on('kelas')
+                  ->onDelete('cascade');
+
+            // foreign key user
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('kelas_user');
